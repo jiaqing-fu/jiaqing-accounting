@@ -1,0 +1,36 @@
+{
+  "name": "jiaqing-accounting-desktop",
+  "version": "1.0.0",
+  "description": "嘉庆记账 — Windows 桌面端",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.jiaqing.accounting",
+    "productName": "嘉庆记账",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "unicode": true
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "../dist/build/h5/**/*"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1"
+  }
+}
