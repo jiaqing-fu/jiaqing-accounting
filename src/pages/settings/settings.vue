@@ -79,7 +79,6 @@ function onExportCSV() {
     fileName: `嘉庆记账_${store.currentMonth}.csv`,
     success: () => { uni.showToast({ title: '请选择保存方式', icon: 'none' }) },
     fail: () => {
-      // 降级：复制到剪贴板
       uni.setClipboardData({
         data: csv,
         success: () => { uni.showToast({ title: 'CSV 已复制到剪贴板', icon: 'success' }) },
@@ -120,7 +119,7 @@ function onFeedback() {
 <style lang="scss" scoped>
 .page-settings {
   padding: $spacing-md;
-  padding-bottom: 40px;
+  padding-bottom: 80rpx;
 }
 
 .section {
@@ -145,7 +144,6 @@ function onFeedback() {
   justify-content: space-between;
   padding: $spacing-md;
   border-bottom: 1px solid $color-bg;
-  cursor: pointer;
 
   &:last-child {
     border-bottom: none;

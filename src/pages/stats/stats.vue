@@ -124,7 +124,7 @@ function onCurrencyFilter(value: Currency | null) {
 <style lang="scss" scoped>
 .page-stats {
   padding: $spacing-md;
-  padding-bottom: 40px;
+  padding-bottom: 80rpx;
 }
 
 .stats-filter {
@@ -162,8 +162,8 @@ function onCurrencyFilter(value: Currency | null) {
 }
 
 .filter-tag {
-  padding: 4px 12px;
-  border-radius: 20px;
+  padding: 8rpx 24rpx;
+  border-radius: 40rpx;
   font-size: $font-xs;
   color: $color-text-light;
   background-color: $color-bg;
@@ -201,7 +201,7 @@ function onCurrencyFilter(value: Currency | null) {
   font-size: $font-lg;
   font-weight: 700;
   color: $color-text;
-  margin: 4px 0;
+  margin: 8rpx 0;
 }
 
 .card-count {
@@ -233,7 +233,7 @@ function onCurrencyFilter(value: Currency | null) {
 .bar-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8rpx;
 }
 
 .bar-label {
@@ -254,15 +254,15 @@ function onCurrencyFilter(value: Currency | null) {
 
 .bar-track {
   width: 100%;
-  height: 8px;
+  height: 16rpx;
   background-color: $color-bg;
-  border-radius: 4px;
+  border-radius: 8rpx;
   overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 8rpx;
   transition: width 0.4s ease;
 }
 
@@ -277,12 +277,12 @@ function onCurrencyFilter(value: Currency | null) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 0;
+  padding: 120rpx 0;
   color: $color-text-light;
 }
 
 .empty-icon {
-  font-size: 48px;
+  font-size: 96rpx;
   margin-bottom: $spacing-md;
 }
 

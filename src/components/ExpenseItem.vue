@@ -60,18 +60,21 @@ function onClick() {
   display: flex;
   align-items: center;
   gap: $spacing-sm;
+  flex: 1;
+  min-width: 0;
 }
 
 .item-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: $radius-round;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
 .item-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .item-category {
@@ -83,14 +86,14 @@ function onClick() {
 .item-date {
   font-size: $font-xs;
   color: $color-text-light;
-  margin-top: 2px;
+  margin-top: 4rpx;
 }
 
 .item-note {
   font-size: $font-xs;
   color: $color-text-light;
-  margin-top: 2px;
-  max-width: 160px;
+  margin-top: 4rpx;
+  max-width: 260rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -100,6 +103,8 @@ function onClick() {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
 }
 
 .item-amount {
@@ -110,13 +115,14 @@ function onClick() {
 .item-actions {
   display: flex;
   gap: $spacing-sm;
-  margin-top: 4px;
+  margin-top: 8rpx;
 }
 
 .action-btn {
-  font-size: $font-xs;
-  padding: 2px 8px;
+  font-size: 20rpx;
+  padding: 4rpx 16rpx;
   border-radius: $radius-sm;
+  line-height: 1.4;
 
   &.edit {
     color: $color-primary;

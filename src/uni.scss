@@ -20,25 +20,25 @@ $color-transport: #f39c12;
 $color-hobby: #9b59b6;
 $color-other: #95a5a6;
 
-/* 间距 */
-$spacing-xs: 4px;
-$spacing-sm: 8px;
-$spacing-md: 16px;
-$spacing-lg: 24px;
-$spacing-xl: 32px;
+/* 间距 (rpx — 适配小程序) */
+$spacing-xs: 8rpx;
+$spacing-sm: 16rpx;
+$spacing-md: 32rpx;
+$spacing-lg: 48rpx;
+$spacing-xl: 64rpx;
 
 /* 圆角 */
-$radius-sm: 8px;
-$radius-md: 12px;
-$radius-lg: 16px;
+$radius-sm: 16rpx;
+$radius-md: 24rpx;
+$radius-lg: 32rpx;
 $radius-round: 50%;
 
-/* 字体 */
-$font-xl: 20px;
-$font-lg: 18px;
-$font-md: 16px;
-$font-sm: 14px;
-$font-xs: 12px;
+/* 字体 (rpx — 适配小程序) */
+$font-xl: 40rpx;
+$font-lg: 36rpx;
+$font-md: 32rpx;
+$font-sm: 28rpx;
+$font-xs: 24rpx;
 
 /* 阴影 */
 $shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);

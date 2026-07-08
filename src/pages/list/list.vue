@@ -139,7 +139,7 @@ async function onDelete(id: string) {
 <style lang="scss" scoped>
 .page-list {
   padding: $spacing-md;
-  padding-bottom: 40px;
+  padding-bottom: 80rpx;
 }
 
 .filter-bar {
@@ -177,8 +177,8 @@ async function onDelete(id: string) {
 }
 
 .filter-tag {
-  padding: 4px 12px;
-  border-radius: 20px;
+  padding: 8rpx 24rpx;
+  border-radius: 40rpx;
   font-size: $font-xs;
   color: $color-text-light;
   background-color: $color-bg;
@@ -200,8 +200,8 @@ async function onDelete(id: string) {
 }
 
 .summary-chip {
-  padding: 2px 10px;
-  border-radius: 12px;
+  padding: 4rpx 20rpx;
+  border-radius: 24rpx;
   font-size: $font-xs;
   color: #fff;
   font-weight: 600;
@@ -218,12 +218,12 @@ async function onDelete(id: string) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 0;
+  padding: 120rpx 0;
   color: $color-text-light;
 }
 
 .empty-icon {
-  font-size: 48px;
+  font-size: 96rpx;
   margin-bottom: $spacing-md;
 }
 

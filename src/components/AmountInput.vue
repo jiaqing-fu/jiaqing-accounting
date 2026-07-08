@@ -6,7 +6,9 @@
       type="digit"
       :value="displayValue"
       placeholder="0.00"
+      placeholder-style="color: #bfbfbf; font-size: 52rpx; font-weight: 500;"
       :maxlength="12"
+      :adjust-position="true"
       @input="onInput"
       @blur="onBlur"
     />
@@ -75,26 +77,28 @@ function onBlur() {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: $spacing-lg 0;
+  padding: 36rpx 0 16rpx;
 }
 
 .amount-symbol {
-  font-size: 32px;
+  font-size: 56rpx;
   font-weight: 700;
   color: $color-primary;
-  margin-right: $spacing-sm;
+  margin-right: 12rpx;
+  line-height: 1.2;
 }
 
 .amount-field {
-  font-size: 40px;
+  font-size: 64rpx;
   font-weight: 700;
   color: $color-text;
   text-align: center;
-  min-width: 120px;
-  max-width: 280px;
-  border-bottom: 3px solid $color-border;
-  padding: $spacing-xs $spacing-sm;
-  outline: none;
+  min-width: 160rpx;
+  max-width: 480rpx;
+  height: auto;
+  line-height: 1.2;
+  border-bottom: 4rpx solid $color-border;
+  padding: 8rpx 16rpx;
 
   &:focus {
     border-bottom-color: $color-primary;

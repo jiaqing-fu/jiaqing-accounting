@@ -37,19 +37,18 @@ function select(code: Category) {
 .category-picker {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-sm;
+  gap: 16rpx;
 }
 
 .category-item {
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-sm $spacing-md;
-  border: 2px solid $color-border;
+  gap: 12rpx;
+  padding: 20rpx 24rpx;
+  border: 3rpx solid $color-border;
   border-radius: $radius-md;
   background-color: $color-card;
   transition: all 0.2s ease;
-  cursor: pointer;
 
   &.active {
     border-color: transparent;
@@ -58,14 +57,14 @@ function select(code: Category) {
 }
 
 .category-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: $radius-round;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
 .category-label {
-  font-size: $font-sm;
+  font-size: 28rpx;
   color: $color-text;
 }
 </style>

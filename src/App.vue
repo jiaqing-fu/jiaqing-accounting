@@ -18,7 +18,7 @@ onLaunch(() => {
 page {
   background-color: $color-bg;
   color: $color-text;
-  font-size: $font-md;
+  font-size: 28rpx;
   min-height: 100vh;
 }
 </style>

@@ -36,23 +36,22 @@ function select(code: Currency) {
 <style lang="scss" scoped>
 .currency-picker {
   display: flex;
-  gap: $spacing-sm;
+  gap: 16rpx;
   flex-wrap: wrap;
 }
 
 .currency-item {
   flex: 1;
-  min-width: 100px;
+  min-width: 180rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: $spacing-md;
-  border: 2px solid $color-border;
+  padding: 24rpx 16rpx;
+  border: 3rpx solid $color-border;
   border-radius: $radius-md;
   background-color: $color-card;
   transition: all 0.2s ease;
-  cursor: pointer;
 
   &.active {
     border-color: transparent;
@@ -62,14 +61,14 @@ function select(code: Currency) {
 }
 
 .currency-symbol {
-  font-size: $font-xl;
+  font-size: 36rpx;
   font-weight: 700;
   color: $color-text;
-  margin-bottom: 2px;
+  margin-bottom: 4rpx;
 }
 
 .currency-label {
-  font-size: $font-xs;
+  font-size: 22rpx;
   color: $color-text-light;
 }
 </style>

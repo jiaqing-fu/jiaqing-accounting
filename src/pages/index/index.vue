@@ -49,7 +49,10 @@
           class="note-input"
           :value="note"
           placeholder="选填（最多200字）"
+          placeholder-style="color: #b0b0b0; font-size: 28rpx;"
           :maxlength="200"
+          :auto-height="true"
+          :fixed="true"
           @input="onNoteInput"
         />
       </view>
@@ -142,15 +145,15 @@ async function onSave() {
 
 <style lang="scss" scoped>
 .page-index {
-  padding: $spacing-md;
-  padding-bottom: 40px;
+  padding: 24rpx;
+  padding-bottom: 80rpx;
 }
 
 .summary-bar {
   display: flex;
   justify-content: space-around;
-  padding: $spacing-md;
-  margin-bottom: $spacing-md;
+  padding: 28rpx 16rpx;
+  margin-bottom: 24rpx;
   background-color: $color-card;
   border-radius: $radius-md;
   box-shadow: $shadow-card;
@@ -163,81 +166,75 @@ async function onSave() {
 }
 
 .summary-symbol {
-  font-size: $font-xs;
+  font-size: 22rpx;
   opacity: 0.7;
 }
 
 .summary-amount {
-  font-size: $font-lg;
+  font-size: 36rpx;
   font-weight: 700;
-  margin-top: 2px;
+  margin-top: 4rpx;
 }
 
 .form-card {
   background-color: $color-card;
   border-radius: $radius-lg;
-  padding: $spacing-lg;
+  padding: 36rpx 28rpx;
   box-shadow: $shadow-card;
 }
 
 .form-section {
-  margin-bottom: $spacing-lg;
+  margin-bottom: 32rpx;
 }
 
 .form-label {
   display: block;
-  font-size: $font-sm;
+  font-size: 28rpx;
   font-weight: 600;
   color: $color-text-light;
-  margin-bottom: $spacing-sm;
+  margin-bottom: 12rpx;
 }
 
 .date-picker {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-sm $spacing-md;
-  border: 2px solid $color-border;
+  padding: 20rpx 24rpx;
+  border: 2rpx solid $color-border;
   border-radius: $radius-md;
   background-color: $color-bg;
-  cursor: pointer;
 }
 
 .date-text {
-  font-size: $font-md;
+  font-size: 30rpx;
   color: $color-text;
 }
 
 .date-arrow {
-  font-size: $font-sm;
+  font-size: 24rpx;
   color: $color-text-light;
 }
 
 .note-input {
   width: 100%;
-  min-height: 88px;
-  padding: $spacing-sm $spacing-md;
-  border: 2px solid $color-border;
+  min-height: 140rpx;
+  padding: 20rpx 24rpx;
+  border: 2rpx solid $color-border;
   border-radius: $radius-md;
   background-color: #fff;
-  font-size: $font-md;
+  font-size: 28rpx;
   color: $color-text;
-  outline: none;
-  resize: vertical;
-  cursor: text;
-
-  &:focus {
-    border-color: $color-primary;
-  }
+  line-height: 1.5;
+  box-sizing: border-box;
 }
 
 .save-btn {
   width: 100%;
-  margin-top: $spacing-lg;
-  padding: $spacing-md;
+  margin-top: 16rpx;
+  padding: 24rpx;
   background-color: $color-primary;
   color: #fff;
-  font-size: $font-lg;
+  font-size: 34rpx;
   font-weight: 700;
   border: none;
   border-radius: $radius-md;
