@@ -56,7 +56,9 @@ function onExportCSV() {
   const BOM = '﻿'
   const header = '日期,币种,类别,金额,备注\n'
   const rows = expenses.map(e => {
-    const note = (e.note ?? '').replace(/"/g, '""')
+    let note = (e.note ?? '').replace(/"/g, '""')
+    // 防御 CSV 公式注入：以 = + - @ 开头的单元格前加单引号
+    if (/^[=+\-@]/.test(note)) note = `'${note}`
     return `${e.date},${e.currency},${e.category},${e.amount.toFixed(2)},"${note}"`
   }).join('\n')
 

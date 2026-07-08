@@ -59,7 +59,7 @@
 
       <!-- 保存按钮 -->
       <button class="save-btn" :disabled="!canSave" @click="onSave">
-        记一笔
+        {{ isSaving ? '保存中...' : '记一笔' }}
       </button>
     </view>
 
@@ -94,10 +94,11 @@ const category = ref<Category>(Category.LIVING)
 const dateStr = ref(getTodayStr())
 const note = ref('')
 const showDatePicker = ref(false)
+const isSaving = ref(false)
 
 const todayStr = computed(() => getTodayStr())
 
-const canSave = computed(() => amount.value > 0)
+const canSave = computed(() => amount.value > 0 && !isSaving.value)
 
 // 从 store 获取汇总
 const totalCNY = computed(() => store.totalCNY)
@@ -123,6 +124,7 @@ function onDateChange(e: { detail: { value: string } }) {
 
 async function onSave() {
   if (!canSave.value) return
+  isSaving.value = true
 
   const success = await store.addExpense({
     amount: amount.value,
@@ -133,13 +135,15 @@ async function onSave() {
   })
 
   if (success) {
-    // 重置表单
     amount.value = 0
     note.value = ''
+    showDatePicker.value = false
     uni.showToast({ title: '记账成功', icon: 'success', duration: 1500 })
   } else {
     uni.showToast({ title: '记账失败', icon: 'error', duration: 1500 })
   }
+
+  isSaving.value = false
 }
 </script>
 
