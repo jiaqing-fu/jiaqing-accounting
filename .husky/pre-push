@@ -1,0 +1,19 @@
+# 完整档：跑的必须是 CI 里的同一组命令（见 .github/workflows/ci.yml），
+# 这样「本地过了」就等于「CI 会绿」，而不是两套标准。
+# 这里的检查曾经拦住过两个真实问题：后端测试文件被编译进生产构建、sql.js 缺类型声明。
+set -e
+
+echo "▶ 单元测试（前端）"
+npm test
+
+echo "▶ 单元测试（后端）"
+npm run test:server
+
+echo "▶ 构建：后端"
+npm run build:server
+
+echo "▶ 构建：微信小程序"
+npm run build:mp-weixin
+
+echo "▶ 构建：H5"
+npm run build:h5

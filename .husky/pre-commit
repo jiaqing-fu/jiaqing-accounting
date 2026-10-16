@@ -1,0 +1,9 @@
+# 快速档：只跑单测（约 3.4s）。
+# 构建检查放 pre-push —— 把 21s 的构建塞进每次 commit，只会让人开始用 --no-verify。
+set -e
+
+echo "▶ 单元测试（前端）"
+npm test
+
+echo "▶ 单元测试（后端）"
+npm run test:server
