@@ -13,7 +13,8 @@
     "dev:server": "cd server && npm run dev",
     "build:server": "cd server && npm run build",
     "test": "vitest run",
-    "test:server": "cd server && npm run test"
+    "test:server": "cd server && npm run test",
+    "prepare": "husky"
   },
   "dependencies": {
     "@dcloudio/uni-app": "^3.0.0-alpha-4020920250114001",
@@ -32,6 +33,7 @@
     "@dcloudio/vite-plugin-uni": "^3.0.0-alpha-4020920250114001",
     "@types/node": "^20.11.0",
     "@vue/test-utils": "^2.4.11",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "sass": "^1.70.0",
     "typescript": "^5.3.3",
