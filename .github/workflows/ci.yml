@@ -1,11 +1,16 @@
 name: CI
 
-# ⚠️ 本流水线刻意不包含 typecheck 步骤。
-# uni-app 的条件编译指令（// #ifdef H5 ... // #endif）对 tsc 而言只是普通注释，
-# 同一文件里两个平台分支会被判定为「重复声明」，导致 `tsc --noEmit` 必然失败。
-# 换 vue-tsc 也无效——它同样不剥离 #ifdef。
-# 若要恢复类型门禁，正确做法是把条件编译重构为按平台拆分的独立文件
-# （如 api/expense.h5.ts + api/expense.mp.ts），而不是把 tsc 加回这里。
+# 关于类型检查（typecheck job）：
+# 原先本流水线没有类型检查，因为 uni-app 的 `// #ifdef` 条件编译对 tsc 而言只是注释，
+# 同一文件里两个平台分支会被判定为「重复声明」，`tsc --noEmit` 与 `vue-tsc` 都必然失败。
+# 现已把平台差异改为 `process.env.UNI_PLATFORM` 常量调度（uni-app 在构建时内联为字面量，
+# 未命中分支被摇掉，效果等价于条件编译），类型检查因此可用。
+#
+# ⚠️ 这个 job 不是可有可无的。三端构建走的是 esbuild/vite，**只转译不做类型检查**，
+# 实测把 `const x: number = "字符串"` 注入源码，两个 build 仍然全绿退出码 0。
+# 也就是说没有这个 job，CI 全绿并不能说明代码类型是好的。
+# 该门禁上线时即抓到 stats.vue 自项目首次提交起就存在的无限递归（币种符号渲染必崩）。
+#
 # 后端的类型检查由 build job 里的 `npm run build:server`（即 tsc）覆盖。
 #
 # runs-on 钉在 ubuntu-24.04 而非 ubuntu-latest：
@@ -51,6 +56,26 @@ jobs:
       - name: 后端单元测试
         run: npm test
         working-directory: server
+
+  typecheck:
+    name: 类型检查
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            server/package-lock.json
+
+      - name: 安装前端依赖
+        run: npm ci
+
+      - name: 前端类型检查
+        run: npm run typecheck
 
   build:
     name: 构建验证

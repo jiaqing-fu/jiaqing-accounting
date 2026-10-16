@@ -297,6 +297,18 @@ interface User {
 - 提交信息使用中文，格式：`[类型] 简要描述`
 - **整个项目期间严格遵守本 CLAUDE.md 中记录的设计决策**
 
+### 9.1 平台差异一律用 `UNI_PLATFORM` 常量，禁用新的 `#ifdef`
+
+需要区分平台时，写成 `process.env.UNI_PLATFORM === 'h5' ? a : b`（uni-app 构建时会把它内联为字面量 `"h5"` / `"mp-weixin"`，未命中分支被摇掉，效果与条件编译等价）。
+
+**不要再用 `// #ifdef` 写平台分支。** 原因：条件编译指令对 tsc 只是注释，同一文件里的两个平台分支会被判定「重复声明」，整个文件从此游离在类型检查之外——`npm run typecheck` 是瞎的，而三端构建只转译不检查类型，CI 全绿也不代表代码是好的。历史上有两个文件因这个原因完全不受检查，其中 `stats.vue` 藏着一处无限递归直到门禁上线才暴露。
+
+遗留：`src/pages/settings/settings.vue` 内仍有 `#ifdef` 块，但均为无重复声明的语句块，对类型检查无害，暂未改动。
+
+### 9.2 提交前自查
+
+`npm run typecheck` 必须通过。它已接入 CI 的 typecheck job 与 `.husky/pre-push`，本地过不了就推不上去。
+
 ---
 
 ## 十、已确认技术方案 ✅
@@ -338,13 +350,20 @@ interface User {
 │   ├── store/
 │   │   └── expense.ts          # Pinia 花销 store
 │   ├── api/
-│   │   └── expense.ts          # 花销 API（H5 / MP-WEIXIN 条件编译双分支）
+│   │   ├── expense.ts          # 花销 API 调度入口（按 UNI_PLATFORM 选用实现）
+│   │   ├── expense.h5.ts       # H5 实现：HTTP 请求本地 Express
+│   │   ├── expense.mp.ts       # 小程序实现：读写 uni.storage
+│   │   └── expense.types.ts    # 两端都必须满足的 ExpenseApi 契约
 │   ├── types/
 │   │   └── index.ts            # Currency / Category / Expense 等类型与元数据
 │   ├── utils/
 │   │   ├── currency.ts         # 币种格式化
 │   │   ├── helpers.ts          # 通用工具
-│   │   └── storage.ts          # 本地存储封装
+│   │   ├── storage.ts          # 本地存储调度入口（按 UNI_PLATFORM 选用实现）
+│   │   ├── storage.h5.ts       # localStorage 实现
+│   │   ├── storage.mp.ts       # uni.storage 实现
+│   │   ├── storage.adapter.ts  # 两端都必须满足的 StorageAdapter 契约
+│   │   └── uni-event.ts        # uni-app 组件事件 ↔ DOM 事件的类型桥
 │   ├── App.vue                 # 应用入口
 │   ├── main.ts                 # 主入口文件
 │   ├── env.d.ts                # 类型声明
@@ -364,7 +383,7 @@ interface User {
 │   ├── main.js                 # 主进程：拉起后端、加载 H5 产物、CSV 存盘 IPC
 │   ├── preload.js              # 预加载脚本
 │   └── package.json            # electron-builder 打包配置
-├── .github/workflows/ci.yml    # CI：单测 + 三端构建
+├── .github/workflows/ci.yml    # CI：单测 + 类型检查 + 三端构建
 ├── .husky/                     # git hooks（pre-commit / pre-push）
 ├── .claude/                    # 项目 agents 与 skills
 ├── CHANGELOG.md
@@ -385,7 +404,7 @@ interface User {
 | 用户认证 | 本地免登录 | 🚧 微信一键登录——未实现，当前同为免登录 |
 | 数据同步 | 作为数据源，提供 API | 🚧 未实现，当前写入本地缓存 |
 | 导出 CSV | 直接写入本地文件（IPC 存盘） | 复制到剪贴板 |
-| 条件编译 | `#ifdef H5` | `#ifdef MP-WEIXIN` |
+| 平台分流 | `process.env.UNI_PLATFORM` 常量调度（见 §9.1） | 同一入口取另一实现 |
 
 ### 10.5 数据存储策略
 
@@ -402,6 +421,7 @@ interface User {
 
 ---
 
-> **文档版本：** v1.2  
+> **文档版本：** v1.3  
 > **最后更新：** 2026-10-16  
-> **状态：** ✅ v1.0.0 已发布（2026-10-16）。功能清单已逐条对照代码核实，未实现项标注为 🚧
+> **状态：** ✅ v1.0.0 已发布（2026-10-16）。功能清单已逐条对照代码核实，未实现项标注为 🚧。
+> v1.3 起项目启用类型门禁（`npm run typecheck`），平台分流改用 §9.1 的常量调度。

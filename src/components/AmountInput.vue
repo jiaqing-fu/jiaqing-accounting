@@ -19,6 +19,7 @@
 import { ref, computed, watch } from 'vue'
 import { Currency } from '@/types'
 import { getCurrencySymbol } from '@/utils/currency'
+import { readInputValue } from '@/utils/uni-event'
 
 const props = defineProps<{
   modelValue: number
@@ -42,8 +43,8 @@ watch(() => props.modelValue, (val) => {
   }
 })
 
-function onInput(e: { detail: { value: string } }) {
-  let val = e.detail.value
+function onInput(e: unknown) {
+  let val = readInputValue(e)
   // 只允许数字和小数点
   val = val.replace(/[^\d.]/g, '')
   // 只保留第一个小数点

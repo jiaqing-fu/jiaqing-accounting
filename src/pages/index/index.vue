@@ -80,6 +80,7 @@ import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { Currency, Category } from '@/types'
 import { getTodayStr } from '@/utils/helpers'
+import { readInputValue } from '@/utils/uni-event'
 import { useExpenseStore } from '@/store/expense'
 import AmountInput from '@/components/AmountInput.vue'
 import CurrencyPicker from '@/components/CurrencyPicker.vue'
@@ -113,8 +114,8 @@ function openDatePicker() {
   showDatePicker.value = true
 }
 
-function onNoteInput(e: { detail: { value: string } }) {
-  note.value = e.detail.value
+function onNoteInput(e: unknown) {
+  note.value = readInputValue(e)
 }
 
 function onDateChange(e: { detail: { value: string } }) {

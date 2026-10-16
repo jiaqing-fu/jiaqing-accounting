@@ -9,6 +9,9 @@ npm test
 echo "▶ 单元测试（后端）"
 npm run test:server
 
+echo "▶ 类型检查（前端）"
+npm run typecheck
+
 echo "▶ 构建：后端"
 npm run build:server
 

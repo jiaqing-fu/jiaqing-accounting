@@ -1,91 +1,20 @@
 /**
- * 本地存储封装
- * H5 端使用 localStorage，小程序端使用 uni.storage API
+ * 本地存储 — 平台调度入口
+ *
+ * 调用方一律 `import storage from '@/utils/storage'`，不需要知道自己跑在哪个平台。
+ *
+ * 这里刻意**不用** `// #ifdef` 条件编译。原因是条件编译对 tsc 只是注释，
+ * 两个平台分支同时可见会被判定为「重复声明」，导致整个文件游离在类型检查之外。
+ * 改用 `process.env.UNI_PLATFORM`：uni-app 在构建时把它内联为字符串字面量
+ * （实测产物中 `process.env` 出现次数为 0），未命中的分支会被摇掉，
+ * 效果与条件编译等价，但 tsc 能完整读懂。
  */
+import h5Storage from './storage.h5'
+import mpStorage from './storage.mp'
+import type { StorageAdapter } from './storage.adapter'
 
-// #ifdef H5
-const storage = {
-  get<T>(key: string): T | null {
-    try {
-      const raw = localStorage.getItem(key)
-      if (raw === null) return null
-      return JSON.parse(raw) as T
-    } catch {
-      return null
-    }
-  },
-  set(key: string, value: unknown): void {
-    try {
-      localStorage.setItem(key, JSON.stringify(value))
-    } catch (e) {
-      console.error('localStorage.setItem failed:', e)
-    }
-  },
-  remove(key: string): void {
-    try {
-      localStorage.removeItem(key)
-    } catch (e) {
-      console.error('localStorage.removeItem failed:', e)
-    }
-  },
-  clear(): void {
-    try {
-      localStorage.clear()
-    } catch (e) {
-      console.error('localStorage.clear failed:', e)
-    }
-  },
-  keys(): string[] {
-    const keys: string[] = []
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)
-      if (key) keys.push(key)
-    }
-    return keys
-  },
-}
-// #endif
-
-// #ifdef MP-WEIXIN
-const storage = {
-  get<T>(key: string): T | null {
-    try {
-      const raw = uni.getStorageSync(key)
-      if (raw === '') return null
-      return JSON.parse(raw) as T
-    } catch {
-      return null
-    }
-  },
-  set(key: string, value: unknown): void {
-    try {
-      uni.setStorageSync(key, JSON.stringify(value))
-    } catch (e) {
-      console.error('uni.setStorageSync failed:', e)
-    }
-  },
-  remove(key: string): void {
-    try {
-      uni.removeStorageSync(key)
-    } catch (e) {
-      console.error('uni.removeStorageSync failed:', e)
-    }
-  },
-  clear(): void {
-    try {
-      uni.clearStorageSync()
-    } catch (e) {
-      console.error('uni.clearStorageSync failed:', e)
-    }
-  },
-  keys(): string[] {
-    try {
-      return uni.getStorageInfoSync().keys
-    } catch {
-      return []
-    }
-  },
-}
-// #endif
+const storage: StorageAdapter =
+  process.env.UNI_PLATFORM === 'h5' ? h5Storage : mpStorage
 
 export default storage
+export type { StorageAdapter }
