@@ -1,0 +1,79 @@
+name: CI
+
+# ⚠️ 本流水线刻意不包含 typecheck 步骤。
+# uni-app 的条件编译指令（// #ifdef H5 ... // #endif）对 tsc 而言只是普通注释，
+# 同一文件里两个平台分支会被判定为「重复声明」，导致 `tsc --noEmit` 必然失败。
+# 换 vue-tsc 也无效——它同样不剥离 #ifdef。
+# 若要恢复类型门禁，正确做法是把条件编译重构为按平台拆分的独立文件
+# （如 api/expense.h5.ts + api/expense.mp.ts），而不是把 tsc 加回这里。
+# 后端的类型检查由 build job 里的 `npm run build:server`（即 tsc）覆盖。
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# 同一分支有新推送时，取消仍在运行的旧任务，省额度也避免结论过期
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: 单元测试
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            server/package-lock.json
+
+      - name: 安装前端依赖
+        run: npm ci
+
+      - name: 前端单元测试
+        run: npm test
+
+      - name: 安装后端依赖
+        run: npm ci
+        working-directory: server
+
+      - name: 后端单元测试
+        run: npm test
+        working-directory: server
+
+  build:
+    name: 构建验证
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            server/package-lock.json
+
+      - name: 安装前端依赖
+        run: npm ci
+
+      - name: 构建微信小程序
+        run: npm run build:mp-weixin
+
+      - name: 构建 H5（Electron 桌面端的前置产物）
+        run: npm run build:h5
+
+      - name: 安装后端依赖
+        run: npm ci
+        working-directory: server
+
+      - name: 构建后端
+        run: npm run build:server

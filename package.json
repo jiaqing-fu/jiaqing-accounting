@@ -11,7 +11,9 @@
     "dev:electron": "cd electron && electron .",
     "build:electron": "cd electron && electron-builder",
     "dev:server": "cd server && npm run dev",
-    "build:server": "cd server && npm run build"
+    "build:server": "cd server && npm run build",
+    "test": "vitest run",
+    "test:server": "cd server && npm run test"
   },
   "dependencies": {
     "@dcloudio/uni-app": "^3.0.0-alpha-4020920250114001",
