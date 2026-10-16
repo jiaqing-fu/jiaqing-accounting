@@ -1,5 +1,9 @@
 # 嘉庆记账 — 产品文档
 
+> **文档约定**：本文混有「设计意图」与「已实现事实」，二者此前发生过偏离并误导过工作。
+> 现已标注状态：**✅ 已实现**（代码中可验证） · **🚧 未实现**（仅设计意图，尚未编码）。
+> 未标注状态的功能视为 ✅。修改代码后请同步更新本文，尤其不要在未实现项上停留模糊表述。
+
 ---
 
 ## 一、产品概述
@@ -37,24 +41,24 @@
 
 ### 3.2 花销列表
 
-- 按日期倒序展示所有花销记录
+- 按日期倒序展示所有花销记录（SQL 层 `ORDER BY date DESC, created_at DESC`）
 - 支持按月筛选
 - 支持按币种筛选
-- 支持按类别筛选
 - 显示当月合计金额（按币种分别统计）
+- 🚧 **按类别筛选** —— 数据层已具备（`ExpenseFilter.category`、store 的 `setFilterCategory`），但列表页无对应 UI 控件，用户无法触达
 
 ### 3.3 数据统计
 
 - 当月各币种总支出概览
-- 类别占比饼图（可按币种切换）
-- 月度趋势折线图
+- 类别占比图（**横向条形图**，非饼图；可按币种切换）
+- 🚧 **月度趋势折线图** —— 未实现，`stats.vue` 中无任何图表库或 canvas 代码
 
 ### 3.4 数据管理
 
-- 数据本地存储（Windows 端）
-- 数据云端同步（微信小程序端，通过微信云开发）
-- 支持导出 CSV
+- 数据本地存储：Windows 端为 SQLite（sql.js），小程序端为 `uni.storage`
+- 支持导出 CSV（含公式注入防护；H5 端直接下载，小程序端复制到剪贴板）
 - 支持编辑/删除已记录的花销
+- 🚧 **数据云端同步（微信云开发）** —— 未实现。小程序端实际经由 `src/utils/storage.ts` 写入本地缓存，两端数据各自独立
 
 ### 3.5 未来可扩展功能（V1 暂不实现）
 
@@ -225,6 +229,8 @@
 >
 > **次选方案 A（uni-app + Electron）**：如果用户坚持需要一个独立的 Windows 桌面应用（.exe），uni-app 是最成熟的中国跨端方案。
 
+> ⚠️ 以上是当时的推荐结论。**最终选定的是方案 A**，依据见第十节。
+
 ---
 
 ## 七、数据模型设计
@@ -239,8 +245,8 @@ interface Expense {
   category: Category;   // 花销类别
   date: string;         // 日期 YYYY-MM-DD
   note?: string;        // 备注（可选，最长 200 字）
-  createdAt: Date;      // 创建时间
-  updatedAt: Date;      // 更新时间
+  createdAt: string;    // 创建时间（ISO datetime）
+  updatedAt: string;    // 更新时间（ISO datetime）
 }
 
 enum Currency {
@@ -257,7 +263,9 @@ enum Category {
 }
 ```
 
-### 7.2 用户表 (users)（云开发方案可直接使用微信 OpenID）
+### 7.2 用户表 (users) 🚧 未实现
+
+> 代码中不存在任何用户或登录实现：`src/types/index.ts` 无 `User` 类型，全项目无 `wx.login` / OpenID 调用。以下仅为设计意图，未编码。
 
 ```typescript
 interface User {
@@ -275,9 +283,9 @@ interface User {
 | 页面 | 功能描述 |
 |------|----------|
 | **首页/记账页** | 金额输入、币种选择、类别选择、日期、备注输入、保存按钮 |
-| **账单列表页** | 按时间倒序展示，支持月份/币种/类别筛选，显示各币种当月合计 |
-| **统计页** | 类别饼图 + 月度趋势，支持币种切换 |
-| **设置页** | 数据导出、关于、反馈 |
+| **账单列表页** | 按时间倒序展示，支持月份/币种筛选，显示各币种当月合计。🚧 类别筛选无 UI（见 §3.2） |
+| **统计页** | 类别占比**横向条形图** + 各币种汇总，支持币种切换。🚧 月度趋势未实现（见 §3.3） |
+| **设置页** | 数据导出（CSV）、关于、反馈（桌面端仅提示"开发中"，见 §10.4） |
 
 ---
 
@@ -303,68 +311,69 @@ interface User {
 |------|------|------|------|
 | **前端框架** | uni-app (Vue 3) | 3.x | 跨端核心框架 |
 | **状态管理** | Pinia | 2.x | Vue 3 官方推荐 |
-| **UI 组件库** | uni-ui | 最新 | uni-app 官方组件库 |
+| **UI 组件库** | 无（手写） | — | 🚧 原计划的 uni-ui 未引入；组件均为 `src/components/` 下手写 |
 | **构建工具** | Vite | 5.x | uni-app 3.x 默认以 Vite 驱动 |
 | **后端框架** | Express | 4.x | 轻量级 Node.js 框架 |
-| **数据库** | SQLite (better-sqlite3) | — | Windows 本地存储，轻量零配置 |
+| **数据库** | SQLite (sql.js) | 1.10.3 | Windows 本地存储；纯 WASM，无需原生编译 |
 | **桌面端** | Electron | 28+ | 将 H5 打包为 Windows .exe |
-| **小程序后端** | 微信云开发 | — | 小程序端数据同步 & 用户认证 |
-| **图表库** | uCharts | — | uni-app 生态内的图表方案 |
+| **小程序后端** | 无（uni.storage 本地缓存） | — | 🚧 原计划的微信云开发未实现 |
+| **图表库** | 无 | — | 🚧 原计划的 uCharts 未引入；类别占比为 CSS 条形图 |
 | **语言** | TypeScript | 5.x | 全体代码类型化 |
 
 ### 10.3 项目目录结构
 
 ```
-d:\Node_APP\
+项目根目录
 ├── src/                        # uni-app 前端源码
 │   ├── pages/                  # 页面目录
 │   │   ├── index/              # 首页 — 记账入口
 │   │   ├── list/               # 账单列表
 │   │   ├── stats/              # 数据统计
 │   │   └── settings/           # 设置
-│   ├── components/             # 公共组件
+│   ├── components/             # 公共组件（全部手写，未用 UI 库）
 │   │   ├── CurrencyPicker.vue  # 币种选择器
 │   │   ├── CategoryPicker.vue  # 类别选择器
 │   │   ├── AmountInput.vue     # 金额输入
 │   │   └── ExpenseItem.vue     # 花销列表项
-│   ├── store/                  # Pinia 状态管理
-│   │   └── expense.ts          # 花销数据 store
-│   ├── api/                    # API 接口层
-│   │   └── expense.ts          # 花销相关 API
-│   ├── utils/                  # 工具函数
+│   ├── store/
+│   │   └── expense.ts          # Pinia 花销 store
+│   ├── api/
+│   │   └── expense.ts          # 花销 API（H5 / MP-WEIXIN 条件编译双分支）
+│   ├── types/
+│   │   └── index.ts            # Currency / Category / Expense 等类型与元数据
+│   ├── utils/
 │   │   ├── currency.ts         # 币种格式化
+│   │   ├── helpers.ts          # 通用工具
 │   │   └── storage.ts          # 本地存储封装
-│   ├── static/                 # 静态资源（图标等）
 │   ├── App.vue                 # 应用入口
 │   ├── main.ts                 # 主入口文件
+│   ├── env.d.ts                # 类型声明
 │   ├── pages.json              # uni-app 页面配置
 │   ├── manifest.json           # 跨端配置
 │   └── uni.scss                # 全局样式变量
 ├── server/                     # Node.js 后端（Windows 端）
 │   ├── src/
-│   │   ├── routes/
-│   │   │   └── expense.ts      # 花销路由
-│   │   ├── controllers/
-│   │   │   └── expense.ts      # 花销控制器
-│   │   ├── models/
-│   │   │   └── expense.ts      # 花销数据模型
-│   │   ├── services/
-│   │   │   └── expense.ts      # 花销业务逻辑
-│   │   ├── database/
-│   │   │   └── index.ts        # SQLite 数据库初始化
+│   │   ├── routes/expense.ts   # 花销路由
+│   │   ├── models/expense.ts   # 花销数据模型
+│   │   ├── services/expense.ts # 花销业务逻辑（含 expense.test.ts）
+│   │   ├── database/index.ts   # SQLite（sql.js）初始化
 │   │   └── index.ts            # 服务入口
 │   ├── package.json
 │   └── tsconfig.json
 ├── electron/                   # Electron 桌面端壳
-│   ├── main.ts                 # Electron 主进程
-│   └── preload.ts              # 预加载脚本
-├── cloudfunctions/             # 微信云函数（小程序端）
-│   └── expense/
-│       ├── index.js
-│       └── package.json
+│   ├── main.js                 # 主进程：拉起后端、加载 H5 产物、CSV 存盘 IPC
+│   ├── preload.js              # 预加载脚本
+│   └── package.json            # electron-builder 打包配置
+├── .github/workflows/ci.yml    # CI：单测 + 三端构建
+├── .husky/                     # git hooks（pre-commit / pre-push）
+├── .claude/                    # 项目 agents 与 skills
+├── CHANGELOG.md
+├── README.md
 ├── package.json                # 前端项目配置
 ├── tsconfig.json
 ├── vite.config.ts
+├── vitest.config.ts
+├── index.html                  # H5 入口模板
 └── CLAUDE.md                   # 项目文档（本文件）
 ```
 
@@ -372,17 +381,17 @@ d:\Node_APP\
 
 | 能力 | Windows (Electron) | 微信小程序 |
 |------|:---:|:---:|
-| 数据存储 | SQLite 本地数据库 | 微信云开发数据库 |
-| 用户认证 | 本地免登录 | 微信一键登录 (OpenID) |
-| 数据同步 | 作为数据源，提供 API | 通过云函数存取 |
-| 导出 CSV | 直接写入本地文件 | 生成文件 → 分享/下载 |
+| 数据存储 | SQLite（sql.js）本地数据库 | `uni.storage` 本地缓存 |
+| 用户认证 | 本地免登录 | 🚧 微信一键登录——未实现，当前同为免登录 |
+| 数据同步 | 作为数据源，提供 API | 🚧 未实现，当前写入本地缓存 |
+| 导出 CSV | 直接写入本地文件（IPC 存盘） | 复制到剪贴板 |
 | 条件编译 | `#ifdef H5` | `#ifdef MP-WEIXIN` |
 
 ### 10.5 数据存储策略
 
-- **Windows 端**：SQLite 本地数据库为主，数据完全本地化，无需网络
-- **小程序端**：微信云开发托管数据库，自动与微信账号关联
-- **V1 不实现两端数据互通**，各自独立使用。未来可考虑通过云数据库做桥梁实现同步
+- **Windows 端**：Electron 主进程拉起本地 Express 服务（`server/dist/index.js`，端口 3000），数据存 SQLite（sql.js），完全本地化，无需网络
+- **小程序端**：数据写入 `uni.storage` 本地缓存（🚧 原计划的微信云开发未实现）
+- **V1 不实现两端数据互通**，各自独立使用
 
 ---
 
@@ -393,6 +402,6 @@ d:\Node_APP\
 
 ---
 
-> **文档版本：** v1.1  
-> **最后更新：** 2026-07-08  
-> **状态：** ✅ 方案已确认，准备进入开发阶段
+> **文档版本：** v1.2  
+> **最后更新：** 2026-10-16  
+> **状态：** ✅ v1.0.0 已发布（2026-10-16）。功能清单已逐条对照代码核实，未实现项标注为 🚧
