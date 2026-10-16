@@ -22,3 +22,6 @@ server/dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# 云端 @claude 工作流的本地试跑产物（CI 里是临时目录，不应提交）
+.claude-run/
