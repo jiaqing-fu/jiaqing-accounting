@@ -309,6 +309,23 @@ interface User {
 
 `npm run typecheck` 必须通过。它已接入 CI 的 typecheck job 与 `.husky/pre-push`，本地过不了就推不上去。
 
+### 9.3 云端 `@claude` 问答（只读）
+
+在 issue / PR 评论里写 `@claude 你的问题`，云端 Claude 会读代码后回帖（`.github/workflows/claude.yml`）。
+
+**它是只读的，四道锁**（均为实测结论，非设计意图）：
+1. 工作流 `permissions` 里没有 `contents: write` —— 没有推代码的凭据；
+2. `checkout` 用 `persist-credentials: false` —— token 不会落进工作区的 `.git/config`；
+3. CLI `--tools` 硬收窄工具表 —— `Write`/`Edit`/`WebFetch` 等工具在会话里**不存在**；
+4. 精确白名单 + `--permission-prompts none` —— 白名单外一律自动拒绝（实测：`curl`、重定向、`A && curl` 复合命令全部被拒，进程正常退出不挂住）。
+
+**信任边界**：只有 `OWNER`/`MEMBER`/`COLLABORATOR` 的评论能触发；但 issue 正文、PR 正文与 diff **任何人都能写**，对 Claude 而言是不可信输入。工作流用随机 nonce 把这段内容划界并声明为数据，但**别把秘密放进任何会被它读到的文本里**。
+
+**凭据**：`ANTHROPIC_AUTH_TOKEN`（仓库 secret，DeepSeek key）+ `ANTHROPIC_BASE_URL`（仓库 variable）+ 可选 `CLAUDE_MODEL`（variable，默认 `deepseek-flash`）。
+轮换：DeepSeek 侧换 key 后，`gh secret set ANTHROPIC_AUTH_TOKEN --repo jiaqing-fu/jiaqing-accounting`（交互式输入，别用 `--body`，否则会进 shell 历史）。想临时停用就删掉该 secret——工作流会因缺凭据失败，但不会做任何危险操作。
+
+**注意**：`issue_comment` 用的是**默认分支上**的工作流文件，所以**合并即上线**，没有"先推分支试跑"；改这个工作流必须走 PR 合并才生效。手动验证可用 `gh workflow run claude.yml -f issue_number=N`。
+
 ---
 
 ## 十、已确认技术方案 ✅
@@ -383,7 +400,10 @@ interface User {
 │   ├── main.js                 # 主进程：拉起后端、加载 H5 产物、CSV 存盘 IPC
 │   ├── preload.js              # 预加载脚本
 │   └── package.json            # electron-builder 打包配置
-├── .github/workflows/ci.yml    # CI：单测 + 类型检查 + 三端构建
+├── .github/
+│   ├── workflows/ci.yml        # CI：单测 + 类型检查 + 三端构建
+│   ├── workflows/claude.yml    # 云端 @claude 只读问答（见 §9.3）
+│   └── claude-answer-system.md # 云端应答者的系统提示（只读契约）
 ├── .husky/                     # git hooks（pre-commit / pre-push）
 ├── .claude/                    # 项目 agents 与 skills
 ├── CHANGELOG.md
@@ -421,7 +441,8 @@ interface User {
 
 ---
 
-> **文档版本：** v1.3  
+> **文档版本：** v1.4  
 > **最后更新：** 2026-10-16  
 > **状态：** ✅ v1.0.0 已发布（2026-10-16）。功能清单已逐条对照代码核实，未实现项标注为 🚧。
 > v1.3 起项目启用类型门禁（`npm run typecheck`），平台分流改用 §9.1 的常量调度。
+> v1.4 起支持云端 `@claude` 只读问答（见 §9.3）。
