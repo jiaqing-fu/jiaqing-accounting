@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
-import type { Currency } from '@/types'
+import { Currency } from '@/types'
 import { CATEGORY_META } from '@/types'
 import { useExpenseStore } from '@/store/expense'
 import { getAllCurrencies, getCurrencySymbol } from '@/utils/currency'
@@ -81,7 +81,7 @@ const loading = computed(() => store.loading)
 const currentMonth = computed(() => store.currentMonth)
 const filterCurrency = computed(() => store.filterCurrency)
 
-const activeCurrency = computed(() => filterCurrency.value ?? 'CNY')
+const activeCurrency = computed(() => filterCurrency.value ?? Currency.CNY)
 
 const currencyOptions = computed(() => [
   { label: '全部币种', value: null },
@@ -90,10 +90,6 @@ const currencyOptions = computed(() => [
 
 function getCategoryColor(category: string) {
   return CATEGORY_META[category as keyof typeof CATEGORY_META]?.color ?? '#95a5a6'
-}
-
-function getCurrencySymbol(code: string) {
-  return getCurrencySymbol(code as Currency)
 }
 
 onShow(() => {

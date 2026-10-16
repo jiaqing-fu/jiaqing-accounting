@@ -13,7 +13,7 @@
       <view class="filter-row">
         <text
           v-for="opt in currencyOptions"
-          :key="opt.value"
+          :key="opt.value ?? 'all'"
           class="filter-tag"
           :class="{ active: filterCurrency === opt.value }"
           @click="onCurrencyFilter(opt.value)"
