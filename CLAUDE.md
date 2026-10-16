@@ -326,6 +326,8 @@ interface User {
 
 **注意**：`issue_comment` 用的是**默认分支上**的工作流文件，所以**合并即上线**，没有"先推分支试跑"；改这个工作流必须走 PR 合并才生效。手动验证可用 `gh workflow run claude.yml -f issue_number=N`。
 
+**迁移到其他项目**：搬什么、改什么、搬之前要重新决策什么，见 [docs/ci-agents-migration.md](./docs/ci-agents-migration.md)。
+
 ---
 
 ## 十、已确认技术方案 ✅
@@ -406,6 +408,7 @@ interface User {
 │   └── claude-answer-system.md # 云端应答者的系统提示（只读契约）
 ├── .husky/                     # git hooks（pre-commit / pre-push）
 ├── .claude/                    # 项目 agents 与 skills
+├── docs/ci-agents-migration.md # CI/CD agent 体系迁移指南（见 §9.3）
 ├── CHANGELOG.md
 ├── README.md
 ├── package.json                # 前端项目配置
@@ -441,8 +444,9 @@ interface User {
 
 ---
 
-> **文档版本：** v1.4  
+> **文档版本：** v1.5  
 > **最后更新：** 2026-10-16  
 > **状态：** ✅ v1.0.0 已发布（2026-10-16）。功能清单已逐条对照代码核实，未实现项标注为 🚧。
 > v1.3 起项目启用类型门禁（`npm run typecheck`），平台分流改用 §9.1 的常量调度。
 > v1.4 起支持云端 `@claude` 只读问答（见 §9.3）。
+> v1.5 起迁移指南独立成文（docs/ci-agents-migration.md）；README 已对齐代码现状。
