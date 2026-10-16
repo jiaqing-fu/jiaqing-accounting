@@ -7,6 +7,10 @@ name: CI
 # 若要恢复类型门禁，正确做法是把条件编译重构为按平台拆分的独立文件
 # （如 api/expense.h5.ts + api/expense.mp.ts），而不是把 tsc 加回这里。
 # 后端的类型检查由 build job 里的 `npm run build:server`（即 tsc）覆盖。
+#
+# runs-on 钉在 ubuntu-24.04 而非 ubuntu-latest：
+# GitHub 于 2026-10-19 起把 ubuntu-latest 迁移到 Ubuntu 26，
+# 钉版本可避免迁移当天构建莫名变红。升级是有意为之的动作，不是被动接受。
 
 on:
   push:
@@ -22,7 +26,7 @@ concurrency:
 jobs:
   test:
     name: 单元测试
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -50,7 +54,7 @@ jobs:
 
   build:
     name: 构建验证
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
